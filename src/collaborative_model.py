@@ -30,10 +30,13 @@ class CollaborativeRecommend:
                 self.prediction[u][m] = est
 
     def collab_recommend(self, user_id, top_n):
+        if user_id not in self.prediction:
+            print(f"User {user_id} not found in predictions.")
+            return []
         user_preds = self.prediction[user_id]
 
         sorted_pred = sorted(user_preds.items(), key=lambda x: x[1], reverse=True)
-        sorted_pred[:top_n]
+        return sorted_pred[:top_n]
 
     def evaluate(self):
         predictions = self.algo.test(self.test)

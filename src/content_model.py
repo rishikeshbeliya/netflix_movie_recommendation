@@ -50,7 +50,7 @@ class ContentRecommender:
 
         if idx is None:
             print(f"No result found for {title} :(")
-            return pd.DataFrame(columns=["title", "id"])
+            return pd.DataFrame(columns=["title", "movieId"])
 
         if isinstance(idx, pd.Series):
             idx = idx.iloc[0]
@@ -62,4 +62,6 @@ class ContentRecommender:
         similarity_score = sorted(similarity_score, key=lambda x: x[1], reverse=True)
 
         top_ns = [i for i, _ in similarity_score[1 : top_n + 1]]
-        return self.df.iloc[top_ns][["title", "id"]]
+        recs = self.df.iloc[top_ns][["title", "movieId"]].copy()
+        recs["similarity_score"] = [similarity_score[i + 1][1] for i in top_ns]
+        return recs
