@@ -33,10 +33,22 @@ class CollaborativeRecommend:
         if user_id not in self.prediction:
             print(f"User {user_id} not found in predictions.")
             return []
-        user_preds = self.prediction[user_id]
 
-        sorted_pred = sorted(user_preds.items(), key=lambda x: x[1], reverse=True)
-        return sorted_pred[:top_n]
+        # Movies user has already seen
+        seen_movies = set(self.ratings[self.ratings["userId"] == user_id]["movieId"])
+        # Candidate movies = all - seen
+        all_movies = set(self.ratings["movieId"].unique())
+        candidates = list(all_movies - seen_movies)
+
+        predictions = []
+
+        for m in candidates:
+            est = self.algo.predict(user_id, m).est
+            predictions.append((m, est))
+
+        # Sort and return top_n
+        predictions = sorted(predictions, key=lambda x: x[1], reverse=True)
+        return predictions[:top_n]
 
     def evaluate(self):
         predictions = self.algo.test(self.test)

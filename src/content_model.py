@@ -61,7 +61,14 @@ class ContentRecommender:
         similarity_score = list(enumerate(cosine_similarty))
         similarity_score = sorted(similarity_score, key=lambda x: x[1], reverse=True)
 
-        top_ns = [i for i, _ in similarity_score[1 : top_n + 1]]
+        # top_ns = [i for i, _ in similarity_score[1 : top_n + 1]]
+        # recs = self.df.iloc[top_ns][["title", "movieId"]].copy()
+        # recs["similarity_score"] = [similarity_score[i + 1][1] for i in top_ns]
+        top_items = similarity_score[1 : top_n + 1]
+
+        top_ns = [i for i, _ in top_items]
+        scores = [score for _, score in top_items]
+
         recs = self.df.iloc[top_ns][["title", "movieId"]].copy()
-        recs["similarity_score"] = [similarity_score[i + 1][1] for i in top_ns]
+        recs["similarity_score"] = scores
         return recs
